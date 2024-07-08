@@ -31,5 +31,5 @@ For each of these libraries, except those listed below, the [MIT License](https:
 ## Leaflet.js
 This project uses Leaflet.js, which is licensed under the [BSD 2-Clause "Simplified" License](https://github.com/Leaflet/Leaflet/blob/main/LICENSE)
 
-## Datensatz
+## Datensatz unfallatlas.csv
 The data used in this project is licensed under the ["Datenlizenz Deutschland – Namensnennung – Version 2.0"](https://www.govdata.de/dl-de/by-2-0) 
