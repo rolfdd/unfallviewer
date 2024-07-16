@@ -1,2 +1,3 @@
 # Unfallviewer
-Das ist ein Clone des [Unfallviewer des ADFC Dresden](http://unfallviewer.adfc-dresden.de/).
+Das ist ein Clone des [Unfallviewer des ADFC Dresden](http://unfallviewer.adfc-dresden.de/). Auf dieser Website stellt der ADFC Dresden e.V. Verkehrsunfalldaten des Unfallatlas des Bundes und der Länder dar. Die Rohdaten werden auf dem [Portal OpenGeodata.NRW](https://www.opengeodata.nrw.de/produkte/transport_verkehr/unfallatlas/)  zur Verfügung gestellt und stehen unter [Datenlizenz Deutschland – Namensnennung – Version 2.0](https://www.govdata.de/dl-de/by-2-0).
+Anders als auf der Unfallatlas-Website werden hier ausschließlich Unfälle in Sachsen mit Radverkehrsbeteiligung dargestellt. Zudem bieten wir verbesserte Filtermöglichkeiten für bestimmte Auswertungen. Dieses Webportal ist ein Teil des Internetangebots des ADFC Dresden e.V. Impressum
