@@ -226,13 +226,15 @@ $.get('unfallatlas.csv',{}, storeCSV, 'text');
 console.timeEnd('get');
 
 	
-console.time('storeCSV');
+
 var CSV;	
 function storeCSV(input) {
+	console.time('parseCSV');
 	CSV = input;
 	parseCSV();
+	console.timeEnd('parseCSV');
 }
-console.timeEnd('storeCSV');
+
 	
 function parseCSV(setObj) {
 	var input = CSV;
