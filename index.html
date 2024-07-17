@@ -239,7 +239,7 @@ function storeCSV(input) {
 function parseCSV(setObj) {
 	var input = CSV;
 	var data = $.csv.toObjects(input);
-	
+	console.log(data);
 	markers.clearLayers();
 
 	count = 0;
