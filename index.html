@@ -228,27 +228,10 @@ fetch("unfallatlas.csv")
   CSV = text;
   parseCSV();
 });
-/*	
-console.time('get');
-$.get('unfallatlas.csv',{}, storeCSV, 'text');
-console.timeEnd('get');
-
-	
-
-var CSV;	
-function storeCSV(input) {
-	console.time('parseCSV');
-	CSV = input;
-	parseCSV();
-	console.timeEnd('parseCSV');
-}
-*/
 	
 function parseCSV(setObj) {
-	//var input = CSV;
 	console.time('c');
-	let data = csvToArray(CSV);
-	//var data = $.csv.toObjects(input);
+	let data = csvToArray(CSV);	
 	console.log(data);
 	console.timeEnd('c');
 	console.time('d');
