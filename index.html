@@ -379,7 +379,7 @@ function update_settings(e) {
 	$("input:checkbox[name=JAHRE]:checked").each(function(){
 		setObj.UJAHR.push($(this).val());
 	});
-
+	console.log(setObj);
 	parseCSV(setObj);
 	return false; // dont submit form
 
