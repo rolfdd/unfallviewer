@@ -245,9 +245,10 @@ function storeCSV(input) {
 */
 	
 function parseCSV(setObj) {
-	var input = CSV;
+	//var input = CSV;
 	console.time('c');
-	var data = $.csv.toObjects(input);
+	let data = csvToArray(CSV);
+	//var data = $.csv.toObjects(input);
 	console.log(data);
 	console.timeEnd('c');
 	console.time('d');
@@ -399,6 +400,20 @@ function update_settings(e) {
 	parseCSV(setObj);
 	return false; // dont submit form
 
+}
+
+function csvToArray(str, delimiter = ",") {
+  const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+  const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+  const arr = rows.map(function (row) {
+    const values = row.split(delimiter);
+    const el = headers.reduce(function (object, header, index) {
+      object[header] = values[index];
+      return object;
+    }, {});
+    return el;
+  });
+  return arr;
 }
 </script>
 </body> 
