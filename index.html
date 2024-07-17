@@ -191,7 +191,6 @@ dialog{
 
 
 <script>
-console.time('gesamt');
 console.time('a');
 expand_labels();
 
@@ -288,7 +287,7 @@ function parseCSV(setObj) {
 	
 	updateMyInfoControl(info,count,countDD);
 }
-console.time('e');
+
 function filterRow(rowObj, setObj) {
 	if (setObj.IstFuss !== '*' && setObj.IstFuss !== rowObj.IstFuss)		return false;
 	if (setObj.IstKrad !== '*' && setObj.IstKrad !== rowObj.IstKrad)		return false;
@@ -389,8 +388,6 @@ function update_settings(e) {
 	return false; // dont submit form
 
 }
-console.timeEnd('e');
-console.timeEnd('gesamt');
 </script>
 </body> 
 </html>
