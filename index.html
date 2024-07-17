@@ -220,18 +220,20 @@ maxZoom: 19,
 map.attributionControl.setPrefix('<a href="https://www.adfc-dresden.de/index.php/impressum" target="_blank">Impressum</a> | <a href="https://www.adfc-dresden.de/index.php/datenschutzerklaerung" target="_blank">Datenschutzerklärung</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 info = addMyInfoControl();
 console.timeEnd('a');
-console.time('b');
+	
+console.time('get');
 $.get('unfallatlas.csv',{}, storeCSV, 'text');
+console.timeEnd('get');
 
-var CSV;
-
+	
+console.time('storeCSV');
+var CSV;	
 function storeCSV(input) {
 	CSV = input;
-	console.log(CSV);
-	console.timeEnd('b');
 	parseCSV();
 }
-
+console.timeEnd('storeCSV');
+	
 function parseCSV(setObj) {
 	var input = CSV;
 	console.time('c');
