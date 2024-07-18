@@ -274,7 +274,7 @@
         map.attributionControl.setPrefix('<a href="https://www.adfc-dresden.de/index.php/impressum" target="_blank">Impressum</a> | <a href="https://www.adfc-dresden.de/index.php/datenschutzerklaerung" target="_blank">Datenschutzerklärung</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
         info = addMyInfoControl();
         console.timeEnd('a');
-        /*
+       
         let CSV;
         fetch("unfallatlas.csv")
         .then(function(response){return response.text()})
@@ -282,9 +282,7 @@
           CSV = text;
           parseCSV();
         });
-        */
-        	window.onload = function(){parseCSV()};
-        	
+
         function parseCSV(setObj) {
         	console.time('c');
         	let data = csvToArray(CSV);	
