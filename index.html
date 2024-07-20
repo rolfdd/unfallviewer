@@ -18,26 +18,58 @@
     <script src="unfallatlas.csv"></script>
 
     <style>
-        body {
-          padding: 0;
-          margin: 0;
-        }
-        html, body, #map {
-          height: 100%;
-          width: 100%;
-          font: 10pt Roboto, "Helvetica Neue", Arial, Helvetica, sans-serif;
-        }
-        .tab {white-space: pre-wrap;}
-        .info{padding: 5px;}
-        dialog{
-          z-index: 2000;
-          width: 80%;
-          max-width: 40em;
-          margin-top: 10px;
-          border: 2px solid silver;
-          background:  #EE7F00bf;
-          color: white;
-        } 
+   		body {
+			padding: 0;
+			margin: 0;
+		}
+			
+		html, body, #map {
+			height: 100%;
+			width: 100%;
+			font: 10pt Roboto, "Helvetica Neue", Arial, Helvetica, sans-serif;
+			font-weight: 300;
+			color: #0a0a0a;
+		}
+			
+		.tab {
+			white-space: pre-wrap;
+		}
+		
+		.info {
+			border-radius: 0px;
+			background:  #ccdbe5;
+			padding: 0px 10px;
+		}
+			
+		dialog{
+			z-index: 2001;
+			width: 80%;
+			max-width: 40em;
+			margin-top: 10px;
+			border: 1px solid #004b7c;
+			background:  #ccdbe5;
+			color: #0a0a0a;
+		}
+		
+		.collapsed{
+			height: 40px;
+		}
+		
+		.sidebar.leaflet-touch {
+			border-radius: 0px;
+			border: 1px solid #004b7c;
+		}
+		
+		.sidebar-tabs, .active {
+			background:  #ccdbe5;
+		}
+		
+		#btnSchliessen, #btnAktualisieren {
+			background-color: #f2f2f2;
+			border: 1px solid #004b7c;
+			padding: 7px 10px;
+			cursor: pointer;
+		}
     </style>
 </head>
 
@@ -50,7 +82,7 @@
             des ADFC Dresden e.V. <a href="https://www.adfc-dresden.de/index.php/impressum" target="_blank">Impressum</a>
         </p>
         <form method="dialog">
-            <button>Schließen</button>
+            <button id="btnSchliessen">Schließen</button>
         </form>
     </dialog>
 
