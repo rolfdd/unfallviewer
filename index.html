@@ -230,7 +230,6 @@
                         <input type="checkbox" class="UART" id="UART9" name="UART" value="9" checked />
                         <label for="UART9">[9] Abkommen von der Fahrbahn nach links</label>
                         <br>
-
                     </p>
 
                     <p>
@@ -359,7 +358,7 @@
         		lat += 4/(111111) * (2*Math.random()-1);
         		lon += 4/(111111) * Math.cos(lat/180*3.1416) * (2*Math.random()-1);
         		
-        		var marker = L.circleMarker([lat, lon], {    color: '#ff0000',radius:2});
+        		var marker = L.circleMarker([lat, lon], {color: '#ff0000',radius:2});
         		markers.addLayer(marker);
         		var html = generatePopupText(rowObj);
         		marker.bindPopup(html);
@@ -377,7 +376,7 @@
         	if (setObj.UART.indexOf(rowObj.UART) == -1)                               return false;
         	if (setObj.UKATEGORIE.indexOf(rowObj.UKATEGORIE) == -1)                   return false;
         	if (setObj.UTYP.indexOf(rowObj.UTYP) == -1)                               return false;
-          if (setObj.UJAHR.indexOf(rowObj.UJAHR) == -1)                             return false;
+                if (setObj.UJAHR.indexOf(rowObj.UJAHR) == -1)                             return false;
         	return true;
         }
         
