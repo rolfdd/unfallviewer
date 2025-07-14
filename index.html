@@ -284,6 +284,8 @@
         
         var sidebar = L.control.sidebar('sidebar').addTo(map);
         var markers = L.layerGroup().addTo(map);
+        var activeMarkers = L.layerGroup();
+        markers.addLayer(activeMarkers);
         
         mapLink = '<a href="https://www.openstreetmap.org">OpenStreetMap</a>';
         L.tileLayer(
@@ -311,7 +313,7 @@
         	console.log(data);
         	console.timeEnd('c');
         	console.time('d');
-        	markers.clearLayers();
+        	var newMarkers = L.layerGroup();
         
         	count = 0;
         	countDD = 0;
@@ -351,10 +353,15 @@
         		lon += 4/(111111) * Math.cos(lat/180*3.1416) * (2*Math.random()-1);
         		
         		var marker = L.circleMarker([lat, lon], {color: '#ff0000',radius:2});
-        		markers.addLayer(marker);
+        		newMarkers.addLayer(marker);
         		var html = generatePopupText(rowObj);
         		marker.bindPopup(html);
         	}
+		
+		markers.removeLayer(activeMarkers);
+        	activeMarkers = newMarkers;
+        	markers.addLayer(activeMarkers);
+		
         	console.timeEnd('d');
         	updateMyInfoControl(info,count,countDD);
         }
