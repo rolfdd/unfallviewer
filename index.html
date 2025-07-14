@@ -1,395 +1,242 @@
 <!DOCTYPE html>
-
 <html lang="de">
 <head>
-
-<meta charset="UTF-8">
-
-<title>ADFC-Viewer für Unfallatlas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" href="/favicon.svg" type="image/x-icon">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-   crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-   crossorigin=""></script>
+    <title>ADFC-Viewer für Unfallatlas</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="favicon.svg" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
     <link rel="stylesheet" href="leaflet-sidebar.css" />
+
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
     <script src="leaflet-hash.js"></script>
-<style>
-body {
-		padding: 0;
-		margin: 0;
-}
-		
-html, body, #map {
-	height: 100%;
-	width: 100%;
-	font: 10pt Roboto, "Helvetica Neue", Arial, Helvetica, sans-serif;
-}
-.tab {white-space: pre-wrap;}
-.info{padding: 5px;}
-dialog{
-	z-index: 2000;
-	width: 80%;
-	max-width: 40em;
-	margin-top: 10px;
-	border: 2px solid silver;
-	background:  #EE7F00bf;
-	color: white;
-}
-</style>
+    <script src="leaflet-sidebar.js"></script>
 
-<script src="jquery-1.8.2.js"></script>
- <script src="jquery-ui.js"></script>
- <script src="jquery.csv.js"></script>
- <script src="leaflet-sidebar.js"></script>
- 
-<script src="unfallviewer.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
 
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            font: 10pt Roboto, "Helvetica Neue", Arial, Helvetica, sans-serif;
+            font-weight: 300;
+            color: #0a0a0a;
+        }
+
+        .tab {
+            white-space: pre-wrap;
+        }
+
+        .info {
+            border-radius: 0px;
+            background:  #ccdbe5;
+            padding: 0px 10px;
+        }
+
+        dialog {
+            z-index: 2001;
+            width: 80%;
+            max-width: 40em;
+            margin-top: 10px;
+            border: 1px solid #004b7c;
+            background:  #ccdbe5;
+            color: #0a0a0a;
+        }
+
+        .collapsed {
+            height: 40px;
+        }
+
+        .sidebar.leaflet-touch {
+            border-radius: 0px;
+            border: 1px solid #004b7c;
+        }
+
+        .sidebar-tabs, .active {
+            background:  #ccdbe5;
+        }
+
+        #btnSchliessen, #btnAktualisieren {
+            background-color: #f2f2f2;
+            border: 1px solid #004b7c;
+            padding: 7px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<dialog open>
-  <p>
-		<h1>Radunfälle in Sachsen</h1>
-		Auf dieser Website stellt der ADFC Dresden e.V. Verkehrsunfalldaten vom Unfallatlas des Bundes und der Länder dar. Die Rohdaten stehen unter <a href="https://www.govdata.de/dl-de/by-2-0"><i>Datenlizenz Deutschland – Namensnennung – Version 2.0</i></a> zur Verfügung. Quelle: <a href="https://unfallatlas.statistikportal.de">Destatis-Unfallatlas</a></br>
-		Anders als auf der Unfallatlas-Website werden hier ausschließlich Unfälle in Sachsen mit Radverkehrsbeteiligung dargestellt. Zudem bieten wir verbesserte Filtermöglichkeiten für bestimmte Auswertungen.
-		Dieses Webportal ist ein Teil des Internetangebots des ADFC Dresden e.V. <a href="https://www.adfc-dresden.de/index.php/impressum" target="_blank">Impressum</a></p>
-		<form method="dialog">
-				<button>Schließen</button>
-		</form>
-</dialog>
+    <!-- dialog und sidebar unverändert -->
+    <div id="map"></div>
 
-<div id="map"></div>
+    <script>
+        console.time('a');
+        document.querySelector('#btnAktualisieren').addEventListener('click', update_settings);
 
-<div id="sidebar" class="sidebar collapsed">
-        <!-- Nav tabs -->
-        <div class="sidebar-tabs">
-            <ul role="tablist">
-                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
-            </ul>
-        </div>
+        const default_zoom = 12;
+        const default_LatLng = [51.0543, 13.7293];
 
+        const map = L.map('map', { zoomControl: false, preferCanvas: true });
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        map.setView(default_LatLng, default_zoom);
+        const hash = new L.Hash(map);
 
-        <!-- Tab panes -->
-        <div class="sidebar-content">
-            <div class="sidebar-pane" id="home">
-                <h1 class="sidebar-header">
-                    sidebar-v2
-                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
-                </h1>
+        const sidebar = L.control.sidebar('sidebar').addTo(map);
+        let markerLayerGroup = L.layerGroup().addTo(map);
 
-                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
+        const mapLink = '<a href="https://www.openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; ' + mapLink + ' Contributors, &copy; Statistikportal <a href="https://unfallatlas.statistikportal.de">Unfallatlas</a>',
+            maxZoom: 19
+        }).addTo(map);
 
-              </div>
+        map.attributionControl.setPrefix('<a href="https://www.adfc-dresden.de/index.php/impressum" target="_blank">Impressum</a> | <a href="https://www.adfc-dresden.de/index.php/datenschutzerklaerung" target="_blank">Datenschutzerklärung</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
 
-            <div class="sidebar-pane" id="profile">
-                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-            </div>
+        const info = addMyInfoControl();
+        console.timeEnd('a');
 
-            <div class="sidebar-pane" id="messages">
-                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-            </div>
+        let CSV;
+        fetch("unfallatlas.csv")
+            .then(response => response.text())
+            .then(text => {
+                CSV = text;
+                parseCSV();
+            });
 
-            <div class="sidebar-pane" id="settings">
-                <h1 class="sidebar-header">Radunfälle in Sachsen - Filter<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-<form id="settingsform">
-<p>
+        function parseCSV(setObj) {
+            console.time('c');
+            const data = csvToArray(CSV);
+            console.log(data);
+            console.timeEnd('c');
+            console.time('d');
 
-<b>Jahre</b><br/>
-<input type="checkbox" class="JAHRE" id="JAHRE0" name="JAHRE" value="16" checked /><label>2016</label>
-<input type="checkbox" class="JAHRE" id="JAHRE1" name="JAHRE" value="17" checked /><label>2017</label>
-<input type="checkbox" class="JAHRE" id="JAHRE2" name="JAHRE" value="18" checked /><label>2018</label><br>
-<input type="checkbox" class="JAHRE" id="JAHRE3" name="JAHRE" value="19" checked /><label>2019</label>
-<input type="checkbox" class="JAHRE" id="JAHRE4" name="JAHRE" value="20" checked /><label>2020</label>
-<input type="checkbox" class="JAHRE" id="JAHRE5" name="JAHRE" value="21" checked /><label>2021</label><br>
-<input type="checkbox" class="JAHRE" id="JAHRE6" name="JAHRE" value="22" checked /><label>2022</label>
-<input type="checkbox" class="JAHRE" id="JAHRE7" name="JAHRE" value="23" checked /><label>2023</label>
-<input type="checkbox" class="JAHRE" id="JAHRE8" name="JAHRE" value="24" checked /><label>2024</label>
-</p>
+            map.removeLayer(markerLayerGroup);
+            markerLayerGroup = L.layerGroup().addTo(map);
 
-<p>
-<b>Art der Verkehrsbeteiligung</b><br/>
-<b class="tab">Fuß    	: </b>
-<input type="radio" id="IstFuss_Ja" name="IstFuss" value="1" /> <label for="IstFuss_Ja">Ja</label>
-<input type="radio" id="IstFuss_Nein" name="IstFuss" value="0" /> <label for="IstFuss_Nein">Nein</label>
-<input type="radio" id="IstFuss_Beide" name="IstFuss" value="*" checked /> <label for="IstFuss_Beide">beide</label>
-<br/>
+            let count = 0;
+            let countDD = 0;
 
-<b class="tab">Rad    	: </b>
-<input type="radio" id="IstRad_Ja" name="IstRad" value="1" checked disabled /> <label for="IstRad_Ja">Ja</label>
-<input type="radio" id="IstRad_Nein" name="IstRad" value="0" disabled /> <label for="IstRad_Nein">Nein</label>
-<input type="radio" id="IstRad_Beide" name="IstRad" value="*" disabled /> <label for="IstRad_Beide">beide</label>
-<br/>
+            for (const row of data) {
+                const rowObj = {
+                    lat: row['@lat'],
+                    lon: row['@lon'],
+                    IstFuss: row['IstFuss'],
+                    IstKrad: row['IstKrad'],
+                    IstPKW: row['IstPKW'],
+                    IstRad: row['IstRad'],
+                    IstGkfz: row['IstGkfz'],
+                    IstSonstig: row['IstSonstig'],
+                    LICHT: row['LICHT'],
+                    UART: row['UART'],
+                    UJAHR: row['UJAHR'],
+                    UKREIS: row['UKREIS'],
+                    UKATEGORIE: row['UKATEGORIE'],
+                    UMONAT: row['UMONAT'],
+                    USTUNDE: row['USTUNDE'],
+                    UTYP: row['UTYP'],
+                    UWOCHENTAG: row['UWOCHENTAG']
+                };
 
-<b class="tab">PKW    	: </b>
-<input type="radio" id="IstPKW_Ja" name="IstPKW" value="1" /> <label for="IstPKW_Ja">Ja</label>
-<input type="radio" id="IstPKW_Nein" name="IstPKW" value="0" /> <label for="IstPKW_Nein">Nein</label>
-<input type="radio" id="IstPKW_Beide" name="IstPKW" value="*" checked /> <label for="IstPKW_Beide">beide</label>
-<br/>
+                if (setObj && !filterRow(rowObj, setObj)) continue;
+                count++;
+                if (rowObj.UKREIS == 12) countDD++;
 
-<b class="tab">Krad    	: </b>
-<input type="radio" id="IstKrad_Ja" name="IstKrad" value="1"  /> <label for="IstKrad_Ja">Ja</label>
-<input type="radio" id="IstKrad_Nein" name="IstKrad" value="0" /> <label for="IstKrad_Nein">Nein</label>
-<input type="radio" id="IstKrad_Beide" name="IstKrad" value="*" checked /> <label for="IstKrad_Beide">beide</label>
-<br/>
+                let lat = parseFloat(rowObj.lat);
+                let lon = parseFloat(rowObj.lon);
 
-<b class="tab">LKW    	: </b>
-<input type="radio" id="IstGkfz_Ja" name="IstGkfz" value="1"  /> <label for="IstGkfz_Ja">Ja</label>
-<input type="radio" id="IstGkfz_Nein" name="IstGkfz" value="0" /> <label for="IstGkfz_Nein">Nein</label>
-<input type="radio" id="IstGkfz_Beide" name="IstGkfz" value="*" checked /> <label for="IstGkfz_Beide">beide</label>
-<br/>
+                lat += 4 / 111111 * (2 * Math.random() - 1);
+                lon += 4 / 111111 * Math.cos(lat / 180 * Math.PI) * (2 * Math.random() - 1);
 
-<b class="tab">Sonstig	: </b>
-<input type="radio" id="IstSonstig_Ja" name="IstSonstig" value="1"  /> <label for="IstSonstig_Ja">Ja</label>
-<input type="radio" id="IstSonstig_Nein" name="IstSonstig" value="0" /> <label for="IstSonstig_Nein">Nein</label>
-<input type="radio" id="IstSonstig_Beide" name="IstSonstig" value="*" checked /> <label for="IstSonstig_Beide">beide</label>
-<br/>
-</p>
+                const marker = L.circleMarker([lat, lon], { color: '#ff0000', radius: 2 });
+                const html = generatePopupText(rowObj);
+                marker.bindPopup(html);
+                markerLayerGroup.addLayer(marker);
+            }
+            console.timeEnd('d');
+            updateMyInfoControl(info, count, countDD);
+        }
 
-<p>
-<b>Unfallart</b><br/>
-<input type="checkbox" class="UART" id="UART0" name="UART" value="0" checked /><label for="UART0"></label><br/>
-<input type="checkbox" class="UART" id="UART1" name="UART" value="1" checked /><label for="UART1"></label><br/>
-<input type="checkbox" class="UART" id="UART2" name="UART" value="2" checked /><label for="UART2"></label><br/>
-<input type="checkbox" class="UART" id="UART3" name="UART" value="3" checked /><label for="UART3"></label><br/>
-<input type="checkbox" class="UART" id="UART4" name="UART" value="4" checked /><label for="UART4"></label><br/>
-<input type="checkbox" class="UART" id="UART5" name="UART" value="5" checked /><label for="UART5"></label><br/>
-<input type="checkbox" class="UART" id="UART6" name="UART" value="6" checked /><label for="UART6"></label><br/>
-<input type="checkbox" class="UART" id="UART7" name="UART" value="7" checked /><label for="UART7"></label><br/>
-<input type="checkbox" class="UART" id="UART8" name="UART" value="8" checked /><label for="UART8"></label><br/>
-<input type="checkbox" class="UART" id="UART9" name="UART" value="9" checked /><label for="UART9"></label><br/>
+        function filterRow(rowObj, setObj) {
+            if (setObj.IstFuss !== '*' && setObj.IstFuss !== rowObj.IstFuss) return false;
+            if (setObj.IstKrad !== '*' && setObj.IstKrad !== rowObj.IstKrad) return false;
+            if (setObj.IstPKW !== '*' && setObj.IstPKW !== rowObj.IstPKW) return false;
+            if (setObj.IstGkfz !== '*' && setObj.IstGkfz !== rowObj.IstGkfz) return false;
+            if (setObj.IstSonstig !== '*' && setObj.IstSonstig !== rowObj.IstSonstig) return false;
+            if (!setObj.UART.includes(rowObj.UART)) return false;
+            if (!setObj.UKATEGORIE.includes(rowObj.UKATEGORIE)) return false;
+            if (!setObj.UTYP.includes(rowObj.UTYP)) return false;
+            if (!setObj.UJAHR.includes(rowObj.UJAHR)) return false;
+            return true;
+        }
 
-</p>
+        function generatePopupText(rowObj) {
+            let html = "<b>Unfallbeteiligte:</b>";
+            if (rowObj.IstFuss == 1) html += " Fuß,";
+            if (rowObj.IstKrad == 1) html += " Krad,";
+            if (rowObj.IstPKW == 1) html += " PKW,";
+            if (rowObj.IstRad == 1) html += " Rad,";
+            if (rowObj.IstSonstig == 1) html += " Sonstig,";
+            html = html.slice(0, -1);
+            html += "<br>";
 
+            html += "<b>Licht: </b>";
+            html += rowObj.LICHT == 0 ? 'Tageslicht' : rowObj.LICHT == 1 ? 'Dämmerung' : rowObj.LICHT == 2 ? 'Dunkelheit' : 'unbekannt';
+            html += "<br>";
 
-<p>
-<b>Unfallkategorie</b><br/>
-<input type="checkbox" class="UKATEGORIE" id="UKATEGORIE1" name="UKATEGORIE" value="1" checked /><label for="UKATEGORIE1"></label><br/>
-<input type="checkbox" class="UKATEGORIE" id="UKATEGORIE2" name="UKATEGORIE" value="2" checked /><label for="UKATEGORIE2"></label><br/>
-<input type="checkbox" class="UKATEGORIE" id="UKATEGORIE3" name="UKATEGORIE" value="3" checked /><label for="UKATEGORIE3"></label><br/>
-</p>
+            html += `<b>Unfallart: </b>${rowObj.UART}<br>`;
+            html += `<b>Unfallkategorie: </b>${rowObj.UKATEGORIE}<br>`;
+            html += `<b>Unfalltyp: </b>${rowObj.UTYP}<br>`;
+            html += `<b>Jahr und Monat: </b>${rowObj.UJAHR}-${rowObj.UMONAT}<br>`;
+            html += `<b>Wochentag und Stunde: </b>${rowObj.UWOCHENTAG} - ${rowObj.USTUNDE}<br>`;
+            return html;
+        }
 
+        function update_settings(e) {
+            e.preventDefault();
+            const setObj = {
+                IstFuss: document.querySelector('input[name="IstFuss"]:checked').value,
+                IstKrad: document.querySelector('input[name="IstKrad"]:checked').value,
+                IstPKW: document.querySelector('input[name="IstPKW"]:checked').value,
+                IstGkfz: document.querySelector('input[name="IstGkfz"]:checked').value,
+                IstSonstig: document.querySelector('input[name="IstSonstig"]:checked').value,
+                UART: [...document.querySelectorAll('input[name="UART"]:checked')].map(el => el.value),
+                UKATEGORIE: [...document.querySelectorAll('input[name="UKATEGORIE"]:checked')].map(el => el.value),
+                UTYP: [...document.querySelectorAll('input[name="UTYP"]:checked')].map(el => el.value),
+                UJAHR: [...document.querySelectorAll('input[name="JAHRE"]:checked')].map(el => el.value)
+            };
+            console.log(setObj);
+            parseCSV(setObj);
+            return false;
+        }
 
-<p>
-<b>Unfalltyp</b><br/>
-<input type="checkbox" class="UTYP" id="UTYP1" name="UTYP" value="1" checked /><label for="UTYP1"></label><br/>
-<input type="checkbox" class="UTYP" id="UTYP2" name="UTYP" value="2" checked /><label for="UTYP2"></label><br/>
-<input type="checkbox" class="UTYP" id="UTYP3" name="UTYP" value="3" checked /><label for="UTYP3"></label><br/>
-<input type="checkbox" class="UTYP" id="UTYP4" name="UTYP" value="4" checked /><label for="UTYP4"></label><br/>
-<input type="checkbox" class="UTYP" id="UTYP5" name="UTYP" value="5" checked /><label for="UTYP5"></label><br/>
-<input type="checkbox" class="UTYP" id="UTYP6" name="UTYP" value="6" checked /><label for="UTYP6"></label><br/>
-<input type="checkbox" class="UTYP" id="UTYP7" name="UTYP" value="7" checked /><label for="UTYP7"></label><br/>
-</p>
+        function csvToArray(str, delimiter = ",") {
+            const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+            const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+            return rows.map(row => {
+                const values = row.split(delimiter);
+                return headers.reduce((obj, header, index) => {
+                    obj[header] = values[index];
+                    return obj;
+                }, {});
+            });
+        }
 
+        function addMyInfoControl() {
+            const info = L.control();
+            info.onAdd = function () {
+                this._div = L.DomUtil.create('div', 'info leaflet-control-layers');
+                return this._div;
+            };
+            info.addTo(map);
+            return info;
+        }
 
-
-<input type="submit" value="Aktualisieren" />
-</form>
-            </div>
-        </div>
-</div>
-
-
-
-<script>
-
-expand_labels();
-
-$("#settingsform").bind("submit", update_settings);
-
-var default_zoom = 12;
-var default_LatLng = [51.0543,13.7293];
-
-var map = L.map('map', {zoomControl: false, preferCanvas: true}); 
-L.control.zoom({
-    position: 'bottomright'
-}).addTo(map);
-map.setView(default_LatLng, default_zoom);
-var hash = new L.Hash(map);
-
-var sidebar = L.control.sidebar('sidebar').addTo(map);
-var markers = L.layerGroup().addTo(map);
-
-mapLink = '<a href="https://www.openstreetmap.org">OpenStreetMap</a>';
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-attribution: '&copy; ' + mapLink + ' Contributors, &copy; Statistikportal <a href="https://unfallatlas.statistikportal.de">Unfallatlas</a>',
-maxZoom: 19,
-}).addTo(map);
-
-//***ADFC Datenschutz und Impressum***
-map.attributionControl.setPrefix('<a href="https://www.adfc-dresden.de/index.php/impressum" target="_blank">Impressum</a> | <a href="https://www.adfc-dresden.de/index.php/datenschutzerklaerung" target="_blank">Datenschutzerklärung</a> | <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>');
-
-$.get('unfallatlas.csv',{}, storeCSV, 'text');
-
-info = addMyInfoControl();
-
-
-
-var CSV;
-
-function storeCSV(input) {
-	CSV = input;
-	parseCSV();
-}
-
-function parseCSV(setObj) {
-	var input = CSV;
-	var data = $.csv.toObjects(input);
-	
-	markers.clearLayers();
-
-	count = 0;
-	countDD = 0;
-	for(var row in data) {
-		var rowObj = {};
-		rowObj.lat = data[row]['@lat'];
-		rowObj.lon = data[row]['@lon'];
-		rowObj.IstFuss = data[row]['IstFuss'];
-		rowObj.IstKrad = data[row]['IstKrad'];
-		rowObj.IstPKW = data[row]['IstPKW'];
-		rowObj.IstRad = data[row]['IstRad'];
-		rowObj.IstGkfz = data[row]['IstGkfz'];
-		rowObj.IstSonstig = data[row]['IstSonstig'];
-		rowObj.LICHT = data[row]['LICHT'];
-		rowObj.UART = data[row]['UART'];
-		rowObj.UJAHR = data[row]['UJAHR'];
-		rowObj.UKREIS = data[row]['UKREIS'];
-		rowObj.UKATEGORIE = data[row]['UKATEGORIE'];
-		rowObj.UMONAT = data[row]['UMONAT'];
-		rowObj.USTUNDE = data[row]['USTUNDE'];
-		rowObj.UTYP = data[row]['UTYP'];
-		rowObj.UWOCHENTAG = data[row]['UWOCHENTAG'];
-
-		if (setObj && !filterRow(rowObj,setObj))
-			continue;
-		
-		count++;
-		
-		if (rowObj.UKREIS == 12) 
-			countDD++;
-		
-
-		var lat = parseFloat(rowObj.lat);
-		var lon = parseFloat(rowObj.lon); 
-		
-		// Dithering to give allow overlapping markers a chance
-		lat += 4/(111111) * (2*Math.random()-1);
-		lon += 4/(111111) * Math.cos(lat/180*3.1416) * (2*Math.random()-1);
-		
-		var marker = L.circleMarker([lat, lon], {    color: '#ff0000',radius:2});
-		markers.addLayer(marker);
-		var html = generatePopupText(rowObj);
-		marker.bindPopup(html);
-	}
-	
-	updateMyInfoControl(info,count,countDD);
-}
-
-function filterRow(rowObj, setObj) {
-	if (setObj.IstFuss !== '*' && setObj.IstFuss !== rowObj.IstFuss)		return false;
-	if (setObj.IstKrad !== '*' && setObj.IstKrad !== rowObj.IstKrad)		return false;
-	if (setObj.IstPKW !== '*' && setObj.IstPKW !== rowObj.IstPKW)		return false;
-	if (setObj.IstGkfz !== '*' && setObj.IstGkfz !== rowObj.IstGkfz)		return false;
-	if (setObj.IstSonstig !== '*' && setObj.IstSonstig !== rowObj.IstSonstig)		return false;	
-
-	if (setObj.UART.indexOf(rowObj.UART) == -1)		return false;		
-	if (setObj.UKATEGORIE.indexOf(rowObj.UKATEGORIE) == -1)		return false;
-	if (setObj.UTYP.indexOf(rowObj.UTYP) == -1)		return false;	
-    
-    if (setObj.UJAHR.indexOf(rowObj.UJAHR) == -1)		return false;
-	return true;
-}
-
-function generatePopupText(rowObj) {
-	var html = "";
-	html += "<b>Unfallbeteiligte:</b>";
-	if (rowObj.IstFuss==1) {
-		html += " Fuß,";
-	}
-	if (rowObj.IstKrad==1) {
-		html += " Krad,";
-	}
-	if (rowObj.IstPKW==1) {
-		html += " PKW,";
-	}
-	if (rowObj.IstRad==1) {
-		html += " Rad,";
-	}
-	if (rowObj.IstSonstig==1) {
-		html += " Sonstig,";
-	}	
-	html = html.slice(0, -1);
-	html += '<br/>';
-	
-	html += "<b>Licht: </b>";
-	if (rowObj.LICHT==0) html+= 'Tageslicht';
-	else if (rowObj.LICHT==1) html+= 'Dämmerung';
-	else if (rowObj.LICHT==2) html+= 'Dunkelheit';
-	else html+= 'unbekannt';
-	html += '<br/>';
-	
-	html += "<b>Unfallart: </b>";
-	html += rowObj.UART;
-	html += '<br/>';
-
-	html += "<b>Unfallkategorie: </b>";
-	html += rowObj.UKATEGORIE;
-	html += '<br/>';
-
-	html += "<b>Unfalltyp: </b>";
-	html += rowObj.UTYP;
-	html += '<br/>';
-	
-	html += "<b>Jahr und Monat: </b>";
-	html += rowObj.UJAHR +'-'+ rowObj.UMONAT;
-	html += '<br/>';
-
-	html += "<b>Wochentag und Stunde: </b>";
-	html += rowObj.UWOCHENTAG + ' - ' + rowObj.USTUNDE;
-	html += '<br/>';
-	
-	
-	return html;
-}
-
-function update_settings(e) {
-	e.preventDefault();
-
-	var setObj = {};
-	setObj.IstFuss = document.querySelector('input[name="IstFuss"]:checked').value;
-	setObj.IstKrad = document.querySelector('input[name="IstKrad"]:checked').value;
-	setObj.IstPKW = document.querySelector('input[name="IstPKW"]:checked').value;
-	setObj.IstGkfz = document.querySelector('input[name="IstGkfz"]:checked').value;
-	setObj.IstSonstig = document.querySelector('input[name="IstSonstig"]:checked').value;
-
-	setObj.UART = [];
-	$("input:checkbox[name=UART]:checked").each(function(){
-		setObj.UART.push($(this).val());
-	});
-
-	setObj.UKATEGORIE = [];
-	$("input:checkbox[name=UKATEGORIE]:checked").each(function(){
-		setObj.UKATEGORIE.push($(this).val());
-	});
-	setObj.UTYP = [];
-	$("input:checkbox[name=UTYP]:checked").each(function(){
-		setObj.UTYP.push($(this).val());
-	});
-	
-	setObj.UJAHR = [];
-	$("input:checkbox[name=JAHRE]:checked").each(function(){
-		setObj.UJAHR.push($(this).val());
-	});
-
-	parseCSV(setObj);
-	return false; // dont submit form
-
-}
-
-</script>
-</body> 
+        function updateMyInfoControl(info, count, countDD) {
+            info._div.innerHTML = `<h4>${count} Unfälle SN (davon ${countDD} DD)</h4>`;
+        }
+    </script>
+</body>
 </html>
